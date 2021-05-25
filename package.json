@@ -1,0 +1,23 @@
+{
+  "name": "react-native-admob-next",
+  "version": "1.0.0",
+  "description": "A react-native component for Google AdMob banners and interstitials",
+  "author": "Izet Molla <izetmolla@gmail.com>",
+  "main": "index.js",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:izetmolla/react-native-admob-next.git"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.44.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.3.0",
+    "eslint-plugin-react": "^7.1.0"
+  }
+}
