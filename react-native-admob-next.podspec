@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.homepage               = 'https://github.com/izetmolla/react-native-admob-next'
   s.license                = package['license']
   s.author                 = 'Izet Molla <izetmolla@gmail.com>'
-  s.platforms              = { :ios => '11.0', :tvos => '9.2' }
+  s.platform               = :ios, '9.0'
   s.source                 = { :git => 'https://github.com/izetmolla/react-native-admob-next.git', :tag => "v#{version}" }
   s.source_files           = 'ios/*.{h,m}'
 
@@ -19,7 +19,9 @@ Pod::Spec.new do |s|
   # So instead we add the default location of the framework to the framework
   # search paths, and we rely on consumers of this library to add
   # Google-Mobile-Ads-SDK as a direct dependency.
-  s.weak_frameworks        = 'GoogleMobileAds'
+  # s.weak_frameworks        = 'GoogleMobileAds'
+  s.dependency 'Google-Mobile-Ads-SDK', "7.69.0"
+
   s.pod_target_xcconfig    = {
     'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/Google-Mobile-Ads-SDK/Frameworks/**"',
   }
