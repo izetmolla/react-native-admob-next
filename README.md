@@ -27,10 +27,6 @@ Alternatively for iOS you can install the library with CocoaPods by adding a lin
 
 For iOS you will have to add the [Google Mobile Ads SDK](https://developers.google.com/admob/ios/quick-start#import_the_mobile_ads_sdk) to your Xcode project.
 
-Info.plist
-
-<key>GADApplicationIdentifier</key>
-<string>ca-app-pub-3940256099942544~1458002511</string>
 
 
 ### Android
@@ -39,16 +35,6 @@ On Android the AdMob library code is part of Play Services, which is automatical
 
 But you still have to manually update your `AndroidManifest.xml`, as described in the [Google Mobile Ads SDK documentation](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml).
 
-AndroidManifest.xml
-
-<manifest>
-    <application>
-        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"/>
-    </application>
-</manifest>
 
 ## Usage
 
