@@ -1,6 +1,6 @@
 {
   "name": "react-native-admob-next",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A react-native component for Google AdMob banners and interstitials",
   "author": "Izet Molla <izetmolla@gmail.com>",
   "main": "index.js",
