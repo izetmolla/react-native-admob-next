@@ -29,10 +29,9 @@ For iOS you will have to add the [Google Mobile Ads SDK](https://developers.goog
 
 Info.plist
 
-´´´jsx
 <key>GADApplicationIdentifier</key>
 <string>ca-app-pub-3940256099942544~1458002511</string>
-```
+
 
 ### Android
 
@@ -42,7 +41,6 @@ But you still have to manually update your `AndroidManifest.xml`, as described i
 
 AndroidManifest.xml
 
-´´´jsx
 <manifest>
     <application>
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
@@ -51,7 +49,6 @@ AndroidManifest.xml
             android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"/>
     </application>
 </manifest>
-```
 
 ## Usage
 
