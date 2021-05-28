@@ -1,7 +1,7 @@
 buildscript {
     if (project == rootProject) {
         repositories {
-            google()
+             mavenCentral()
         }
 
         dependencies {
@@ -18,7 +18,6 @@ def safeExtGet(prop, fallback) {
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 30)
-    // buildToolsVersion safeExtGet('buildToolsVersion', '29.0.2')
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)
         targetSdkVersion safeExtGet('targetSdkVersion', 30)
