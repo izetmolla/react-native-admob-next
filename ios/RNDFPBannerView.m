@@ -15,7 +15,7 @@
 
 @implementation RNDFPBannerView
 {
-    DFPBannerView  *_bannerView;
+    GAMBannerView  *_bannerView;
 }
 
 - (void)dealloc
@@ -30,10 +30,9 @@
     if ((self = [super initWithFrame:frame])) {
         super.backgroundColor = [UIColor clearColor];
 
-        UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-        UIViewController *rootViewController = [keyWindow rootViewController];
+        UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
-        _bannerView = [[DFPBannerView alloc] initWithAdSize:kGADAdSizeBanner];
+        _bannerView = [[GAMBannerView alloc] initWithAdSize:kGADAdSizeBanner];
         _bannerView.delegate = self;
         _bannerView.adSizeDelegate = self;
         _bannerView.appEventDelegate = self;
@@ -54,15 +53,35 @@
 
 - (void)loadBanner {
     GADRequest *request = [GADRequest request];
-    request.testDevices = _testDevices;
     [_bannerView loadRequest:request];
+}
+
+- (void)setAdSize:(NSString *)adSize
+{
+    _adSize = adSize;
+
+    UIView *view = _bannerView.rootViewController.view;
+    CGRect frame = view.frame;
+
+    if (@available(iOS 11.0, *)) {
+        frame = UIEdgeInsetsInsetRect(view.frame, view.safeAreaInsets);
+    }
+
+    [_bannerView setAdSize:[RCTConvert GADAdSize:adSize withWidth:frame.size.width]];
 }
 
 - (void)setValidAdSizes:(NSArray *)adSizes
 {
+    UIView *view = _bannerView.rootViewController.view;
+    CGRect frame = view.frame;
+
+    if (@available(iOS 11.0, *)) {
+        frame = UIEdgeInsetsInsetRect(view.frame, view.safeAreaInsets);
+    }
+
     __block NSMutableArray *validAdSizes = [[NSMutableArray alloc] initWithCapacity:adSizes.count];
     [adSizes enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
-        GADAdSize adSize = [RCTConvert GADAdSize:jsonValue];
+        GADAdSize adSize = [RCTConvert GADAdSize:jsonValue withWidth:frame.size.width];
         if (GADAdSizeEqualToSize(adSize, kGADAdSizeInvalid)) {
             RCTLogWarn(@"Invalid adSize %@", jsonValue);
         } else {
@@ -74,7 +93,9 @@
 
 - (void)setTestDevices:(NSArray *)testDevices
 {
-    _testDevices = RNAdMobProcessTestDevices(testDevices, kDFPSimulatorID);
+    _testDevices = RNAdMobProcessTestDevices(testDevices, kGADSimulatorID);
+
+    [GADMobileAds sharedInstance].requestConfiguration.testDeviceIdentifiers = _testDevices;
 }
 
 -(void)layoutSubviews
@@ -86,7 +107,7 @@
 # pragma mark GADBannerViewDelegate
 
 /// Tells the delegate an ad request loaded an ad.
-- (void)adViewDidReceiveAd:(DFPBannerView *)adView
+- (void)adViewDidReceiveAd:(GAMBannerView *)adView
 {
     if (self.onSizeChange) {
         self.onSizeChange(@{
@@ -99,8 +120,8 @@
 }
 
 /// Tells the delegate an ad request failed.
-- (void)adView:(DFPBannerView *)adView
-didFailToReceiveAdWithError:(GADRequestError *)error
+- (void)adView:(GAMBannerView *)adView
+didFailToReceiveAdWithError:(NSError *)error
 {
     if (self.onAdFailedToLoad) {
         self.onAdFailedToLoad(@{ @"error": @{ @"message": [error localizedDescription] } });
@@ -109,7 +130,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 
 /// Tells the delegate that a full screen view will be presented in response
 /// to the user clicking on an ad.
-- (void)adViewWillPresentScreen:(DFPBannerView *)adView
+- (void)adViewWillPresentScreen:(GAMBannerView *)adView
 {
     if (self.onAdOpened) {
         self.onAdOpened(@{});
@@ -117,7 +138,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 }
 
 /// Tells the delegate that the full screen view will be dismissed.
-- (void)adViewWillDismissScreen:(__unused DFPBannerView *)adView
+- (void)adViewWillDismissScreen:(__unused GAMBannerView *)adView
 {
     if (self.onAdClosed) {
         self.onAdClosed(@{});
@@ -126,7 +147,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 
 /// Tells the delegate that a user click will open another app (such as
 /// the App Store), backgrounding the current app.
-- (void)adViewWillLeaveApplication:(DFPBannerView *)adView
+- (void)adViewWillLeaveApplication:(GAMBannerView *)adView
 {
     if (self.onAdLeftApplication) {
         self.onAdLeftApplication(@{});
@@ -135,6 +156,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 
 # pragma mark GADAdSizeDelegate
 
+/// Called before the ad view changes to the new size.
 - (void)adView:(GADBannerView *)bannerView willChangeAdSizeTo:(GADAdSize)size
 {
     CGSize adSize = CGSizeFromGADAdSize(size);
@@ -145,6 +167,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 
 # pragma mark GADAppEventDelegate
 
+/// Called when the banner receives an app event.
 - (void)adView:(GADBannerView *)banner didReceiveAppEvent:(NSString *)name withInfo:(NSString *)info
 {
     if (self.onAppEvent) {

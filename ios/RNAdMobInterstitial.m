@@ -13,14 +13,13 @@ static NSString *const kEventAdOpened = @"interstitialAdOpened";
 static NSString *const kEventAdFailedToOpen = @"interstitialAdFailedToOpen";
 static NSString *const kEventAdClosed = @"interstitialAdClosed";
 static NSString *const kEventAdLeftApplication = @"interstitialAdLeftApplication";
+static NSString *const kEventAdImpression = @"interstitialAdImpression";
 
 @implementation RNAdMobInterstitial
 {
-    GADInterstitial  *_interstitial;
+    GADInterstitialAd  *_interstitial;
     NSString *_adUnitID;
     NSArray *_testDevices;
-    RCTPromiseResolveBlock _requestAdResolve;
-    RCTPromiseRejectBlock _requestAdReject;
     BOOL hasListeners;
 }
 
@@ -44,7 +43,8 @@ RCT_EXPORT_MODULE();
              kEventAdOpened,
              kEventAdFailedToOpen,
              kEventAdClosed,
-             kEventAdLeftApplication ];
+             kEventAdLeftApplication,
+             kEventAdImpression ];
 }
 
 #pragma mark exported methods
@@ -61,38 +61,82 @@ RCT_EXPORT_METHOD(setTestDevices:(NSArray *)testDevices)
 
 RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-    _requestAdResolve = nil;
-    _requestAdReject = nil;
+    if (_interstitial) {
+        UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+        BOOL hasBeenUsed = [_interstitial canPresentFromRootViewController:rootViewController error:nil];
 
-    if ([_interstitial hasBeenUsed] || _interstitial == nil) {
-        _requestAdResolve = resolve;
-        _requestAdReject = reject;
-
-        _interstitial = [[GADInterstitial alloc] initWithAdUnitID:_adUnitID];
-        _interstitial.delegate = self;
-
-        GADRequest *request = [GADRequest request];
-        request.testDevices = _testDevices;
-        [_interstitial loadRequest:request];
-    } else {
-        reject(@"E_AD_ALREADY_LOADED", @"Ad is already loaded.", nil);
+        if (hasBeenUsed) {
+            reject(@"E_AD_ALREADY_LOADED", @"Ad is already loaded.", nil);
+            return;
+        }
     }
+
+    GADRequest *request = [GADRequest request];
+    [GADInterstitialAd loadWithAdUnitID:_adUnitID
+                                request:request
+                      completionHandler:^(GADInterstitialAd * _Nullable interstitialAd, NSError * _Nullable error) {
+        if (error) {
+            if (self->hasListeners) {
+                NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(@"E_AD_REQUEST_FAILED", error.localizedDescription, error);
+                [self sendEventWithName:kEventAdFailedToLoad body:jsError];
+            }
+
+            reject(@"E_AD_REQUEST_FAILED", error.localizedDescription, error);
+
+            return;
+        }
+
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        [notificationCenter removeObserver:self
+                                      name:UIApplicationDidEnterBackgroundNotification
+                                    object:nil];
+
+        [notificationCenter addObserver:self
+                               selector:@selector(interstitialWillLeaveApplication:)
+                                   name:UIApplicationDidEnterBackgroundNotification
+                                 object:nil];
+
+        self->_interstitial = interstitialAd;
+        self->_interstitial.fullScreenContentDelegate = self;
+
+        if (self->hasListeners) {
+            [self sendEventWithName:kEventAdLoaded body:nil];
+        }
+
+        resolve(nil);
+    }];
 }
 
 RCT_EXPORT_METHOD(showAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-    if ([_interstitial isReady]) {
-        [_interstitial presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];
-        resolve(nil);
+    if (!_interstitial) {
+        reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
+        return;
     }
-    else {
+
+    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    BOOL isReady = [_interstitial canPresentFromRootViewController:rootViewController error:nil];
+
+    if (isReady) {
+        [_interstitial presentFromRootViewController:rootViewController];
+
+        resolve(nil);
+    } else {
         reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
     }
 }
 
 RCT_EXPORT_METHOD(isReady:(RCTResponseSenderBlock)callback)
 {
-    callback(@[[NSNumber numberWithBool:[_interstitial isReady]]]);
+    if (!_interstitial) {
+        callback(@[[NSNumber numberWithBool:NO]]);
+        return;
+    }
+
+    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    BOOL isReady = [_interstitial canPresentFromRootViewController:rootViewController error:nil];
+
+    callback(@[[NSNumber numberWithBool:isReady]]);
 }
 
 - (void)startObserving
@@ -105,47 +149,44 @@ RCT_EXPORT_METHOD(isReady:(RCTResponseSenderBlock)callback)
     hasListeners = NO;
 }
 
-#pragma mark GADInterstitialDelegate
+#pragma mark GADFullScreenContentDelegate
 
-- (void)interstitialDidReceiveAd:(__unused GADInterstitial *)ad
+/// Tells the delegate that an impression has been recorded for the ad.
+- (void)adDidRecordImpression:(nonnull id<GADFullScreenPresentingAd>)ad
 {
     if (hasListeners) {
-        [self sendEventWithName:kEventAdLoaded body:nil];
+        [self sendEventWithName:kEventAdImpression body:nil];
     }
-    _requestAdResolve(nil);
 }
 
-- (void)interstitial:(__unused GADInterstitial *)interstitial didFailToReceiveAdWithError:(GADRequestError *)error
+/// Tells the delegate that the ad failed to present full screen content.
+- (void)ad:(nonnull id<GADFullScreenPresentingAd>)ad
+    didFailToPresentFullScreenContentWithError:(nonnull NSError *)error
 {
     if (hasListeners) {
-        NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(@"E_AD_REQUEST_FAILED", error.localizedDescription, error);
-        [self sendEventWithName:kEventAdFailedToLoad body:jsError];
-    }
-    _requestAdReject(@"E_AD_REQUEST_FAILED", error.localizedDescription, error);
-}
-
-- (void)interstitialWillPresentScreen:(__unused GADInterstitial *)ad
-{
-    if (hasListeners){
-        [self sendEventWithName:kEventAdOpened body:nil];
-    }
-}
-
-- (void)interstitialDidFailToPresentScreen:(__unused GADInterstitial *)ad
-{
-    if (hasListeners){
         [self sendEventWithName:kEventAdFailedToOpen body:nil];
     }
 }
 
-- (void)interstitialWillDismissScreen:(__unused GADInterstitial *)ad
+/// Tells the delegate that the ad presented full screen content.
+- (void)adDidPresentFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
+{
+    if (hasListeners) {
+        [self sendEventWithName:kEventAdOpened body:nil];
+    }
+}
+
+/// Tells the delegate that the ad dismissed full screen content.
+- (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
 {
     if (hasListeners) {
         [self sendEventWithName:kEventAdClosed body:nil];
     }
 }
 
-- (void)interstitialWillLeaveApplication:(__unused GADInterstitial *)ad
+#pragma mark -
+
+- (void)interstitialWillLeaveApplication:(NSNotification *)notification
 {
     if (hasListeners) {
         [self sendEventWithName:kEventAdLeftApplication body:nil];

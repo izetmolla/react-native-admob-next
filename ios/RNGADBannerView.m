@@ -11,6 +11,8 @@
 #import "RCTLog.h"
 #endif
 
+#include "RCTConvert+GADAdSize.h"
+
 @implementation RNGADBannerView
 {
     GADBannerView *_bannerView;
@@ -26,8 +28,9 @@
 {
     if ((self = [super initWithFrame:frame])) {
         super.backgroundColor = [UIColor clearColor];
-        UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-        UIViewController *rootViewController = [keyWindow rootViewController];
+        
+        UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+        
         _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
         _bannerView.delegate = self;
         _bannerView.adSizeDelegate = self;
@@ -56,14 +59,30 @@
                                 });
         }
     }
+    
     GADRequest *request = [GADRequest request];
-    request.testDevices = _testDevices;
     [_bannerView loadRequest:request];
 }
 
 - (void)setTestDevices:(NSArray *)testDevices
 {
     _testDevices = RNAdMobProcessTestDevices(testDevices, kGADSimulatorID);
+
+    [GADMobileAds sharedInstance].requestConfiguration.testDeviceIdentifiers = _testDevices;
+}
+
+- (void)setAdSize:(NSString *)adSize
+{
+    _adSize = adSize;
+
+    UIView *view = _bannerView.rootViewController.view;
+    CGRect frame = view.frame;
+
+    if (@available(iOS 11.0, *)) {
+        frame = UIEdgeInsetsInsetRect(view.frame, view.safeAreaInsets);
+    }
+
+    [_bannerView setAdSize:[RCTConvert GADAdSize:_adSize withWidth:frame.size.width]];
 }
 
 -(void)layoutSubviews
@@ -84,7 +103,7 @@
 
 /// Tells the delegate an ad request failed.
 - (void)adView:(__unused GADBannerView *)adView
-didFailToReceiveAdWithError:(GADRequestError *)error
+didFailToReceiveAdWithError:(NSError *)error
 {
     if (self.onAdFailedToLoad) {
         self.onAdFailedToLoad(@{ @"error": @{ @"message": [error localizedDescription] } });
@@ -119,6 +138,7 @@ didFailToReceiveAdWithError:(GADRequestError *)error
 
 # pragma mark GADAdSizeDelegate
 
+/// Called before the ad view changes to the new size.
 - (void)adView:(__unused GADBannerView *)bannerView willChangeAdSizeTo:(GADAdSize)size
 {
     CGSize adSize = CGSizeFromGADAdSize(size);

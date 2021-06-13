@@ -81,8 +81,8 @@ PublisherBanner.propTypes = {
    * mediumRectangle (300x250, IAB Medium Rectangle for Phones and Tablets)
    * fullBanner (468x60, IAB Full-Size Banner for Tablets)
    * leaderboard (728x90, IAB Leaderboard for Tablets)
-   * smartBannerPortrait (Screen width x 32|50|90, Smart Banner for Phones and Tablets)
-   * smartBannerLandscape (Screen width x 32|50|90, Smart Banner for Phones and Tablets)
+   * adaptiveBannerPortrait (Screen width x Adaptive height, Adaptive Banner for Phones and Tablets)
+   * adaptiveBannerLandscape (Screen width x Adaptive height, Adaptive Banner for Phones and Tablets)
    *
    * banner is default
    */
