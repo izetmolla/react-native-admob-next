@@ -21,8 +21,6 @@ static NSString *const kEventAdImpression = @"rewardedVideoAdImpression";
     NSString *_adUnitID;
     NSArray *_testDevices;
     GADRewardedAd *_rewardedAd;
-    RCTPromiseResolveBlock _requestAdResolve;
-    RCTPromiseRejectBlock _requestAdReject;
     BOOL hasListeners;
 }
 
@@ -99,11 +97,6 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 
         resolve(nil);
     }];
-
-
-
-    _requestAdResolve = resolve;
-    _requestAdReject = reject;
 }
 
 RCT_EXPORT_METHOD(showAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
