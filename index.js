@@ -12,4 +12,7 @@ module.exports = {
   get AdMobRewarded() {
     return require('./RNAdMobRewarded').default;
   },
+  get AdSize() {
+    return require('./RNAdSize').default;
+  }
 };
