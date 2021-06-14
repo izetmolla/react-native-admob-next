@@ -38,12 +38,12 @@ RCT_EXPORT_VIEW_PROPERTY(adSize, NSString)
 RCT_EXPORT_VIEW_PROPERTY(validAdSizes, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(testDevices, NSArray)
 
-RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAppEvent, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdLoaded, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdFailedToLoad, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdRecordImpression,RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdOpened, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdClosed, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onAdLeftApplication, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAppEvent, RCTBubblingEventBlock)
 
 @end
