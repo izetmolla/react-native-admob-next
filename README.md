@@ -155,9 +155,9 @@ Accepts a function. Called when an ad opens an overlay that covers the screen.
 
 Accepts a function. Called when the user is about to return to the application after clicking on an ad.
 
-##### `onAdLeftApplication`
+##### `onAdRecordImpression`
 
-Accepts a function. Called when a user click will open another app (such as the App Store), backgrounding the current app.
+Accepts a function. Called when an ad impression has been recorded.
 
 ##### `onSizeChange`
 
