@@ -1,5 +1,5 @@
-#import "RNDFPBannerViewManager.h"
-#import "RNDFPBannerView.h"
+#import "RNGAMBannerViewManager.h"
+#import "RNGAMBannerView.h"
 
 #if __has_include(<React/RCTBridge.h>)
 #import <React/RCTBridge.h>
@@ -11,13 +11,13 @@
 #import "RCTEventDispatcher.h"
 #endif
 
-@implementation RNDFPBannerViewManager
+@implementation RNGAMBannerViewManager
 
 RCT_EXPORT_MODULE();
 
 - (UIView *)view
 {
-  return [RNDFPBannerView new];
+  return [RNGAMBannerView new];
 }
 
 RCT_EXPORT_METHOD(loadBanner:(nonnull NSNumber *)reactTag)

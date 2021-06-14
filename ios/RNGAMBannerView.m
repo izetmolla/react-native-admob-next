@@ -1,4 +1,4 @@
-#import "RNDFPBannerView.h"
+#import "RNGAMBannerView.h"
 #import "RNAdMobUtils.h"
 
 #if __has_include(<React/RCTBridgeModule.h>)
@@ -13,7 +13,7 @@
 
 #include "RCTConvert+GADAdSize.h"
 
-@implementation RNDFPBannerView
+@implementation RNGAMBannerView
 {
     GAMBannerView  *_bannerView;
 }
