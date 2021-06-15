@@ -252,11 +252,6 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
       <td><code>onAdClosed</code></td>
     </tr>
     <tr>
-      <td><code>adLeftApplication</code></td>
-      <td><code>interstitialWillLeaveApplication</code></td>
-      <td><code>onAdLeftApplication</code></td>
-    </tr>
-    <tr>
       <td><code>adImpression</code></td>
       <td><code>interstitialAdImpression</code></td>
       <td></td>
@@ -334,11 +329,6 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
       <td><code>adClosed</code></td>
       <td><code>rewardBasedVideoAdDidClose</code></td>
       <td><code>onRewardedVideoAdClosed</code></td>
-    </tr>
-    <tr>
-      <td><code>adLeftApplication</code></td>
-      <td><code>rewardBasedVideoAdWillLeaveApplication</code></td>
-      <td><code>onRewardedVideoAdLeftApplication</code></td>
     </tr>
     <tr>
       <td><code>adImpression</code></td>

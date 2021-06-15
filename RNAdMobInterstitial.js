@@ -15,7 +15,6 @@ const eventMap = {
   adOpened: 'interstitialAdOpened',
   adFailedToOpen: 'interstitialAdFailedToOpen',
   adClosed: 'interstitialAdClosed',
-  adLeftApplication: 'interstitialAdLeftApplication',
   adImpression: 'interstitialAdImpression',
 };
 

@@ -15,7 +15,6 @@ const eventMap = {
   adOpened: 'rewardedVideoAdOpened',
   adFailedToOpen:'rewardedVideoAdFailedToOpen',
   adClosed: 'rewardedVideoAdClosed',
-  adLeftApplication: 'rewardedVideoAdLeftApplication',
   rewarded: 'rewardedVideoAdRewarded',
   adImpression: 'rewardedVideoAdImpression',
 };

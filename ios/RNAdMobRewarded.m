@@ -12,7 +12,6 @@ static NSString *const kEventAdFailedToLoad = @"rewardedVideoAdFailedToLoad";
 static NSString *const kEventAdOpened = @"rewardedVideoAdOpened";
 static NSString *const kEventAdFailedToOpen = @"rewardedVideoAdFailedToOpen";
 static NSString *const kEventAdClosed = @"rewardedVideoAdClosed";
-static NSString *const kEventAdLeftApplication = @"rewardedVideoAdLeftApplication";
 static NSString *const kEventRewarded = @"rewardedVideoAdRewarded";
 static NSString *const kEventAdImpression = @"rewardedVideoAdImpression";
 
@@ -45,7 +44,6 @@ RCT_EXPORT_MODULE();
              kEventAdOpened,
              kEventAdFailedToOpen,
              kEventAdClosed,
-             kEventAdLeftApplication,
              kEventAdImpression ];
 }
 
@@ -77,16 +75,6 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 
             return;
         }
-
-        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-        [notificationCenter removeObserver:self
-                                      name:UIApplicationDidEnterBackgroundNotification
-                                    object:nil];
-
-        [notificationCenter addObserver:self
-                               selector:@selector(rewardBasedVideoAdWillLeaveApplication:)
-                                   name:UIApplicationDidEnterBackgroundNotification
-                                 object:nil];
 
         self->_rewardedAd = rewardedAd;
         self->_rewardedAd.fullScreenContentDelegate = self;
@@ -180,15 +168,6 @@ RCT_EXPORT_METHOD(isReady:(RCTResponseSenderBlock)callback)
 {
     if (hasListeners) {
         [self sendEventWithName:kEventAdClosed body:nil];
-    }
-}
-
-#pragma mark -
-
-- (void)rewardBasedVideoAdWillLeaveApplication:(NSNotification *)notification
-{
-    if (hasListeners) {
-        [self sendEventWithName:kEventAdLeftApplication body:nil];
     }
 }
 

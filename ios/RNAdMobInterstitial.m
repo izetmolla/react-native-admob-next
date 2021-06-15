@@ -12,7 +12,6 @@ static NSString *const kEventAdFailedToLoad = @"interstitialAdFailedToLoad";
 static NSString *const kEventAdOpened = @"interstitialAdOpened";
 static NSString *const kEventAdFailedToOpen = @"interstitialAdFailedToOpen";
 static NSString *const kEventAdClosed = @"interstitialAdClosed";
-static NSString *const kEventAdLeftApplication = @"interstitialAdLeftApplication";
 static NSString *const kEventAdImpression = @"interstitialAdImpression";
 
 @implementation RNAdMobInterstitial
@@ -43,7 +42,6 @@ RCT_EXPORT_MODULE();
              kEventAdOpened,
              kEventAdFailedToOpen,
              kEventAdClosed,
-             kEventAdLeftApplication,
              kEventAdImpression ];
 }
 
@@ -85,16 +83,6 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 
             return;
         }
-
-        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-        [notificationCenter removeObserver:self
-                                      name:UIApplicationDidEnterBackgroundNotification
-                                    object:nil];
-
-        [notificationCenter addObserver:self
-                               selector:@selector(interstitialWillLeaveApplication:)
-                                   name:UIApplicationDidEnterBackgroundNotification
-                                 object:nil];
 
         self->_interstitial = interstitialAd;
         self->_interstitial.fullScreenContentDelegate = self;
@@ -181,15 +169,6 @@ RCT_EXPORT_METHOD(isReady:(RCTResponseSenderBlock)callback)
 {
     if (hasListeners) {
         [self sendEventWithName:kEventAdClosed body:nil];
-    }
-}
-
-#pragma mark -
-
-- (void)interstitialWillLeaveApplication:(NSNotification *)notification
-{
-    if (hasListeners) {
-        [self sendEventWithName:kEventAdLeftApplication body:nil];
     }
 }
 
