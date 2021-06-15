@@ -6,6 +6,5 @@ export default {
   SKYSCRAPER: 'skyscraper',
   LEADERBOARD: 'leaderboard',
   MEDIUM_RECTANGLE: 'mediumRectangle',
-  ADAPTIVE_BANNER_PORTRAIT: 'adaptiveBannerPortrait',
-  ADAPTIVE_BANNER_LANDSCAPE: 'adaptiveBannerLandscape',
+  ADAPTIVE_BANNER: 'adaptiveBanner',
 }

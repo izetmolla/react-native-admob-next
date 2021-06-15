@@ -127,8 +127,7 @@ _Corresponding to [iOS framework banner size constants](https://developers.googl
     </tr>
     <tr>
       <td>
-        <code>adaptiveBannerPortrait</code><br/>
-        <code>adaptiveBannerLandscape</code>
+        <code>adaptiveBanner</code>
       </td>
       <td>Adaptive Banner</td>
       <td>Phones and Tablets</td>
@@ -136,8 +135,6 @@ _Corresponding to [iOS framework banner size constants](https://developers.googl
     </tr>
   </tbody>
 </table>
-
-_Note: There is no `adaptiveBannerPortrait` and `adaptiveBannerLandscape` on Android. Both prop values will map to `smartBanner`_
 
 ##### `onAdLoaded`
 

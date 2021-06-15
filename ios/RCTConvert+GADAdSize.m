@@ -19,10 +19,8 @@
         return kGADAdSizeLeaderboard;
     } else if ([adSize isEqualToString:@"mediumRectangle"]) {
         return kGADAdSizeMediumRectangle;
-    } else if ([adSize isEqualToString:@"adaptiveBannerPortrait"]) {
-        return GADPortraitAnchoredAdaptiveBannerAdSizeWithWidth(width);
-    } else if ([adSize isEqualToString:@"adaptiveBannerLandscape"]) {
-        return GADLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(width);
+    } else if ([adSize isEqualToString:@"adaptiveBanner"]) {
+        return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width);
     }
     else {
         return kGADAdSizeInvalid;
