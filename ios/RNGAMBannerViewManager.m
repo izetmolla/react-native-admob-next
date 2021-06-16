@@ -25,7 +25,7 @@ RCT_EXPORT_METHOD(loadBanner:(nonnull NSNumber *)reactTag)
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RNGAMBannerView *> *viewRegistry) {
         RNGAMBannerView *view = viewRegistry[reactTag];
         if (![view isKindOfClass:[RNGAMBannerView class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting RNDFPBannerView, got: %@", view);
+            RCTLogError(@"Invalid view returned from registry, expecting RNGADBannerView, got: %@", view);
         } else {
             [view loadBanner];
         }

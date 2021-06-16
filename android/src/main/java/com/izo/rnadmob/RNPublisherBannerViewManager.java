@@ -221,7 +221,7 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
 
 public class RNPublisherBannerViewManager extends ViewGroupManager<ReactPublisherAdView> {
 
-    public static final String REACT_CLASS = "RNDFPBannerView";
+    public static final String REACT_CLASS = "RNGADBannerView";
 
     public static final String PROP_AD_SIZE = "adSize";
     public static final String PROP_VALID_AD_SIZES = "validAdSizes";

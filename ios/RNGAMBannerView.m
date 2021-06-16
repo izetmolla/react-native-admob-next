@@ -47,7 +47,7 @@
 #pragma clang diagnostic ignored "-Wobjc-missing-super-calls"
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
-    RCTLogError(@"RNDFPBannerView cannot have subviews");
+    RCTLogError(@"RNGADBannerView cannot have subviews");
 }
 #pragma clang diagnostic pop
 
