@@ -14,5 +14,8 @@ module.exports = {
   },
   get AdSize() {
     return require('./RNAdSize').default;
+  },
+  get AdTestIds() {
+    return require('./RNAdTestIds').default;
   }
 };
