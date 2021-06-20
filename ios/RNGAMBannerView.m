@@ -1,4 +1,4 @@
-#import "RNGADBannerView.h"
+#import "RNGAMBannerView.h"
 #import "RNAdMobUtils.h"
 
 #if __has_include(<React/RCTBridgeModule.h>)
@@ -13,15 +13,16 @@
 
 #include "RCTConvert+GADAdSize.h"
 
-@implementation RNGADBannerView
+@implementation RNGAMBannerView
 {
-    GADBannerView *_bannerView;
+    GAMBannerView  *_bannerView;
 }
 
 - (void)dealloc
 {
     _bannerView.delegate = nil;
     _bannerView.adSizeDelegate = nil;
+    _bannerView.appEventDelegate = nil;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -31,12 +32,14 @@
 
         UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
-        _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
+        _bannerView = [[GAMBannerView alloc] initWithAdSize:kGADAdSizeBanner];
         _bannerView.delegate = self;
         _bannerView.adSizeDelegate = self;
+        _bannerView.appEventDelegate = self;
         _bannerView.rootViewController = rootViewController;
         [self addSubview:_bannerView];
     }
+
     return self;
 }
 
@@ -48,27 +51,9 @@
 }
 #pragma clang diagnostic pop
 
-- (void)loadBanner
-{
-    if(self.onSizeChange) {
-        CGSize size = CGSizeFromGADAdSize(_bannerView.adSize);
-        if(!CGSizeEqualToSize(size, self.bounds.size)) {
-            self.onSizeChange(@{
-                                @"width": @(size.width),
-                                @"height": @(size.height)
-                                });
-        }
-    }
-
+- (void)loadBanner {
     GADRequest *request = [GADRequest request];
     [_bannerView loadRequest:request];
-}
-
-- (void)setTestDevices:(NSArray *)testDevices
-{
-    _testDevices = RNAdMobProcessTestDevices(testDevices, kGADSimulatorID);
-
-    [GADMobileAds sharedInstance].requestConfiguration.testDeviceIdentifiers = _testDevices;
 }
 
 - (void)setAdSize:(NSString *)adSize
@@ -82,7 +67,35 @@
         frame = UIEdgeInsetsInsetRect(view.frame, view.safeAreaInsets);
     }
 
-    [_bannerView setAdSize:[RCTConvert GADAdSize:_adSize withWidth:frame.size.width]];
+    [_bannerView setAdSize:[RCTConvert GADAdSize:adSize withWidth:frame.size.width]];
+}
+
+- (void)setValidAdSizes:(NSArray *)adSizes
+{
+    UIView *view = _bannerView.rootViewController.view;
+    CGRect frame = view.frame;
+
+    if (@available(iOS 11.0, *)) {
+        frame = UIEdgeInsetsInsetRect(view.frame, view.safeAreaInsets);
+    }
+
+    __block NSMutableArray *validAdSizes = [[NSMutableArray alloc] initWithCapacity:adSizes.count];
+    [adSizes enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
+        GADAdSize adSize = [RCTConvert GADAdSize:jsonValue withWidth:frame.size.width];
+        if (GADAdSizeEqualToSize(adSize, kGADAdSizeInvalid)) {
+            RCTLogWarn(@"Invalid adSize %@", jsonValue);
+        } else {
+            [validAdSizes addObject:NSValueFromGADAdSize(adSize)];
+        }
+    }];
+    _bannerView.validAdSizes = validAdSizes;
+}
+
+- (void)setTestDevices:(NSArray *)testDevices
+{
+    _testDevices = RNAdMobProcessTestDevices(testDevices, kGADSimulatorID);
+
+    [GADMobileAds sharedInstance].requestConfiguration.testDeviceIdentifiers = _testDevices;
 }
 
 -(void)layoutSubviews
@@ -97,6 +110,13 @@
 /// the banner view to the view hierarchy if it hasn't been added yet.
 - (void)bannerViewDidReceiveAd:(nonnull GADBannerView *)bannerView
 {
+    if (self.onSizeChange) {
+        self.onSizeChange(@{
+            @"width": @(bannerView.frame.size.width),
+            @"height": @(bannerView.frame.size.height)
+                          });
+    }
+
     if (self.onAdLoaded) {
         self.onAdLoaded(@{});
     }
@@ -147,6 +167,16 @@
         @"width": @(adSize.width),
         @"height": @(adSize.height)
                       });
+}
+
+# pragma mark GADAppEventDelegate
+
+/// Called when the banner receives an app event.
+- (void)adView:(nonnull GADBannerView *)banner didReceiveAppEvent:(nonnull NSString *)name withInfo:(nullable NSString *)info
+{
+    if (self.onAppEvent) {
+        self.onAppEvent(@{ @"name": name, @"info": info });
+    }
 }
 
 @end

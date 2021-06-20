@@ -28,7 +28,7 @@ class PublisherBanner extends Component {
   loadBanner() {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this._bannerView),
-      UIManager.getViewManagerConfig('RNDFPBannerView').Commands.loadBanner,
+      UIManager.getViewManagerConfig('RNGAMBannerView').Commands.loadBanner,
       null,
     );
   }
@@ -56,7 +56,7 @@ class PublisherBanner extends Component {
 
   render() {
     return (
-      <RNDFPBannerView
+      <RNGAMBannerView
         {...this.props}
         style={[this.props.style, this.state.style]}
         onSizeChange={this.handleSizeChange}
@@ -81,8 +81,8 @@ PublisherBanner.propTypes = {
    * mediumRectangle (300x250, IAB Medium Rectangle for Phones and Tablets)
    * fullBanner (468x60, IAB Full-Size Banner for Tablets)
    * leaderboard (728x90, IAB Leaderboard for Tablets)
-   * smartBannerPortrait (Screen width x 32|50|90, Smart Banner for Phones and Tablets)
-   * smartBannerLandscape (Screen width x 32|50|90, Smart Banner for Phones and Tablets)
+   * adaptiveBannerPortrait (Screen width x Adaptive height, Adaptive Banner for Phones and Tablets)
+   * adaptiveBannerLandscape (Screen width x Adaptive height, Adaptive Banner for Phones and Tablets)
    *
    * banner is default
    */
@@ -112,10 +112,9 @@ PublisherBanner.propTypes = {
   onAdFailedToLoad: func,
   onAdOpened: func,
   onAdClosed: func,
-  onAdLeftApplication: func,
   onAppEvent: func,
 };
 
-const RNDFPBannerView = requireNativeComponent('RNDFPBannerView', PublisherBanner);
+const RNGAMBannerView = requireNativeComponent('RNGAMBannerView', PublisherBanner);
 
 export default PublisherBanner;

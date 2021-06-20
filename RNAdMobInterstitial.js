@@ -13,8 +13,9 @@ const eventMap = {
   adLoaded: 'interstitialAdLoaded',
   adFailedToLoad: 'interstitialAdFailedToLoad',
   adOpened: 'interstitialAdOpened',
+  adFailedToOpen: 'interstitialAdFailedToOpen',
   adClosed: 'interstitialAdClosed',
-  adLeftApplication: 'interstitialAdLeftApplication',
+  adImpression: 'interstitialAdImpression',
 };
 
 const _subscriptions = new Map();

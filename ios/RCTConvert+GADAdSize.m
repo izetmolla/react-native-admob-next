@@ -2,7 +2,7 @@
 
 @implementation RCTConvert (GADAdSize)
 
-+ (GADAdSize)GADAdSize:(id)json
++ (GADAdSize)GADAdSize:(id)json withWidth:(CGFloat)width
 {
     NSString *adSize = [self NSString:json];
     if ([adSize isEqualToString:@"banner"]) {
@@ -19,10 +19,8 @@
         return kGADAdSizeLeaderboard;
     } else if ([adSize isEqualToString:@"mediumRectangle"]) {
         return kGADAdSizeMediumRectangle;
-    } else if ([adSize isEqualToString:@"smartBannerPortrait"]) {
-        return kGADAdSizeSmartBannerPortrait;
-    } else if ([adSize isEqualToString:@"smartBannerLandscape"]) {
-        return kGADAdSizeSmartBannerLandscape;
+    } else if ([adSize isEqualToString:@"adaptiveBanner"]) {
+        return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width);
     }
     else {
         return kGADAdSizeInvalid;

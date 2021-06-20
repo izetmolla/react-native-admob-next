@@ -127,17 +127,14 @@ _Corresponding to [iOS framework banner size constants](https://developers.googl
     </tr>
     <tr>
       <td>
-        <code>smartBannerPortrait</code><br/>
-        <code>smartBannerLandscape</code>
+        <code>adaptiveBanner</code>
       </td>
-      <td>Smart Banner</td>
+      <td>Adaptive Banner</td>
       <td>Phones and Tablets</td>
-      <td>Screen width x 32|50|90</td>
+      <td>Screen width x Adaptive height</td>
     </tr>
   </tbody>
 </table>
-
-_Note: There is no `smartBannerPortrait` and `smartBannerLandscape` on Android. Both prop values will map to `smartBanner`_
 
 ##### `onAdLoaded`
 
@@ -155,9 +152,9 @@ Accepts a function. Called when an ad opens an overlay that covers the screen.
 
 Accepts a function. Called when the user is about to return to the application after clicking on an ad.
 
-##### `onAdLeftApplication`
+##### `onAdRecordImpression`
 
-Accepts a function. Called when a user click will open another app (such as the App Store), backgrounding the current app.
+Accepts a function. Called when an ad impression has been recorded.
 
 ##### `onSizeChange`
 
@@ -241,6 +238,11 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
     </tr>
     <tr>
       <td><code>adFailedToOpen</code></td>
+      <td><code>interstitialAdFailedToOpen</code></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><code>adFailedToOpen</code></td>
       <td><code>interstitialDidFailToPresentScreen</code></td>
       <td><em>Not supported</em></td>
     </tr>
@@ -250,9 +252,9 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
       <td><code>onAdClosed</code></td>
     </tr>
     <tr>
-      <td><code>adLeftApplication</code></td>
-      <td><code>interstitialWillLeaveApplication</code></td>
-      <td><code>onAdLeftApplication</code></td>
+      <td><code>adImpression</code></td>
+      <td><code>interstitialAdImpression</code></td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -319,14 +321,9 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
       <td><code>onRewardedVideoAdOpened</code></td>
     </tr>
     <tr>
-      <td><code>videoStarted</code></td>
-      <td><code>rewardBasedVideoAdDidStartPlaying</code></td>
-      <td><code>onRewardedVideoStarted</code></td>
-    </tr>
-    <tr>
-      <td><code>videoCompleted</code></td>
-      <td><code>rewardBasedVideoAdDidCompletePlaying</code></td>
-      <td><code>rewardedVideoAdVideoCompleted</code></td>
+      <td><code>adFailedToOpen</code></td>
+      <td><code>rewardedVideoAdFailedToOpen</code></td>
+      <td></td>
     </tr>
     <tr>
       <td><code>adClosed</code></td>
@@ -334,9 +331,9 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
       <td><code>onRewardedVideoAdClosed</code></td>
     </tr>
     <tr>
-      <td><code>adLeftApplication</code></td>
-      <td><code>rewardBasedVideoAdWillLeaveApplication</code></td>
-      <td><code>onRewardedVideoAdLeftApplication</code></td>
+      <td><code>adImpression</code></td>
+      <td><code>rewardedVideoAdImpression</code></td>
+      <td></td>
     </tr>
   </tbody>
 </table>

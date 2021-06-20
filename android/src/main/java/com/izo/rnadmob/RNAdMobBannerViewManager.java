@@ -1,8 +1,12 @@
 package com.izo.rnadmob;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
@@ -11,7 +15,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -21,9 +24,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class ReactAdView extends ReactViewGroup {
@@ -46,19 +54,18 @@ class ReactAdView extends ReactViewGroup {
         this.adView = new AdView(context);
         this.adView.setAdListener(new AdListener() {
             @Override
-            public void onAdLoaded() {
-                int width = adView.getAdSize().getWidthInPixels(context);
-                int height = adView.getAdSize().getHeightInPixels(context);
-                int left = adView.getLeft();
-                int top = adView.getTop();
-                adView.measure(width, height);
-                adView.layout(left, top, left + width, top + height);
-                sendOnSizeChangeEvent();
-                sendEvent(RNAdMobBannerViewManager.EVENT_AD_LOADED, null);
+            public void onAdClosed() {
+                super.onAdClosed();
+
+                sendEvent(RNAdMobBannerViewManager.EVENT_AD_CLOSED, null);
             }
 
             @Override
-            public void onAdFailedToLoad(int errorCode) {
+            public void onAdFailedToLoad(@NonNull @NotNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+
+                int errorCode = loadAdError.getCode();
+
                 String errorMessage = "Unknown error";
                 switch (errorCode) {
                     case AdRequest.ERROR_CODE_INTERNAL_ERROR:
@@ -83,17 +90,35 @@ class ReactAdView extends ReactViewGroup {
 
             @Override
             public void onAdOpened() {
+                super.onAdOpened();
+
                 sendEvent(RNAdMobBannerViewManager.EVENT_AD_OPENED, null);
             }
 
             @Override
-            public void onAdClosed() {
-                sendEvent(RNAdMobBannerViewManager.EVENT_AD_CLOSED, null);
+            public void onAdLoaded() {
+                super.onAdLoaded();
+
+                int width = adView.getAdSize().getWidthInPixels(context);
+                int height = adView.getAdSize().getHeightInPixels(context);
+                int left = adView.getLeft();
+                int top = adView.getTop();
+                adView.measure(width, height);
+                adView.layout(left, top, left + width, top + height);
+                sendOnSizeChangeEvent();
+                sendEvent(RNAdMobBannerViewManager.EVENT_AD_LOADED, null);
             }
 
             @Override
-            public void onAdLeftApplication() {
-                sendEvent(RNAdMobBannerViewManager.EVENT_AD_LEFT_APPLICATION, null);
+            public void onAdClicked() {
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
+
+                sendEvent(RNAdMobBannerViewManager.EVENT_AD_RECORD_IMPRESSION, null);
             }
         });
         this.addView(this.adView);
@@ -102,16 +127,12 @@ class ReactAdView extends ReactViewGroup {
     private void sendOnSizeChangeEvent() {
         int width;
         int height;
-        ReactContext reactContext = (ReactContext) getContext();
         WritableMap event = Arguments.createMap();
         AdSize adSize = this.adView.getAdSize();
-        if (this.adSize == AdSize.SMART_BANNER) {
-            width = (int) PixelUtil.toDIPFromPixel(adSize.getWidthInPixels(reactContext));
-            height = (int) PixelUtil.toDIPFromPixel(adSize.getHeightInPixels(reactContext));
-        } else {
-            width = adSize.getWidth();
-            height = adSize.getHeight();
-        }
+
+        width = adSize.getWidth();
+        height = adSize.getHeight();
+
         event.putDouble("width", width);
         event.putDouble("height", height);
         sendEvent(RNAdMobBannerViewManager.EVENT_SIZE_CHANGE, event);
@@ -127,15 +148,6 @@ class ReactAdView extends ReactViewGroup {
 
     public void loadBanner() {
         AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-        if (testDevices != null) {
-            for (int i = 0; i < testDevices.length; i++) {
-                String testDevice = testDevices[i];
-                if (testDevice == "SIMULATOR") {
-                    testDevice = AdRequest.DEVICE_ID_EMULATOR;
-                }
-                adRequestBuilder.addTestDevice(testDevice);
-            }
-        }
         AdRequest adRequest = adRequestBuilder.build();
         this.adView.loadAd(adRequest);
     }
@@ -152,6 +164,22 @@ class ReactAdView extends ReactViewGroup {
 
     public void setTestDevices(String[] testDevices) {
         this.testDevices = testDevices;
+
+        if (testDevices != null) {
+            List<String> testDeviceIds = new ArrayList<>();
+
+            for (int i = 0; i < testDevices.length; i++) {
+                String testDevice = testDevices[i];
+                if (testDevice == "SIMULATOR") {
+                    testDeviceIds.add(AdRequest.DEVICE_ID_EMULATOR);
+                } else {
+                    testDeviceIds.add(testDevice);
+                }
+            }
+
+            RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+            MobileAds.setRequestConfiguration(configuration);
+        }
     }
 
     public void setAdSize(AdSize adSize) {
@@ -168,12 +196,12 @@ public class RNAdMobBannerViewManager extends ViewGroupManager<ReactAdView> {
     public static final String PROP_AD_UNIT_ID = "adUnitID";
     public static final String PROP_TEST_DEVICES = "testDevices";
 
-    public static final String EVENT_SIZE_CHANGE = "onSizeChange";
     public static final String EVENT_AD_LOADED = "onAdLoaded";
     public static final String EVENT_AD_FAILED_TO_LOAD = "onAdFailedToLoad";
+    public static final String EVENT_AD_RECORD_IMPRESSION = "onAdRecordImpression";
     public static final String EVENT_AD_OPENED = "onAdOpened";
     public static final String EVENT_AD_CLOSED = "onAdClosed";
-    public static final String EVENT_AD_LEFT_APPLICATION = "onAdLeftApplication";
+    public static final String EVENT_SIZE_CHANGE = "onSizeChange";
 
     public static final int COMMAND_LOAD_BANNER = 1;
 
@@ -198,12 +226,12 @@ public class RNAdMobBannerViewManager extends ViewGroupManager<ReactAdView> {
     public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
         String[] events = {
-            EVENT_SIZE_CHANGE,
             EVENT_AD_LOADED,
             EVENT_AD_FAILED_TO_LOAD,
+            EVENT_AD_RECORD_IMPRESSION,
             EVENT_AD_OPENED,
             EVENT_AD_CLOSED,
-            EVENT_AD_LEFT_APPLICATION
+            EVENT_SIZE_CHANGE
         };
         for (int i = 0; i < events.length; i++) {
             builder.put(events[i], MapBuilder.of("registrationName", events[i]));
@@ -213,7 +241,18 @@ public class RNAdMobBannerViewManager extends ViewGroupManager<ReactAdView> {
 
     @ReactProp(name = PROP_AD_SIZE)
     public void setPropAdSize(final ReactAdView view, final String sizeString) {
-        AdSize adSize = getAdSizeFromString(sizeString);
+        Context context = view.getContext();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
+
+        int adWidth = (int) (widthPixels / density);
+
+        AdSize adSize = getAdSizeFromString(context, sizeString, adWidth);
         view.setAdSize(adSize);
     }
 
@@ -229,7 +268,7 @@ public class RNAdMobBannerViewManager extends ViewGroupManager<ReactAdView> {
         view.setTestDevices(list.toArray(new String[list.size()]));
     }
 
-    private AdSize getAdSizeFromString(String adSize) {
+    private AdSize getAdSizeFromString(Context context, String adSize, int width) {
         switch (adSize) {
             case "largeBanner":
                 return AdSize.LARGE_BANNER;
@@ -239,12 +278,8 @@ public class RNAdMobBannerViewManager extends ViewGroupManager<ReactAdView> {
                 return AdSize.FULL_BANNER;
             case "leaderBoard":
                 return AdSize.LEADERBOARD;
-            case "smartBannerPortrait":
-                return AdSize.SMART_BANNER;
-            case "smartBannerLandscape":
-                return AdSize.SMART_BANNER;
-            case "smartBanner":
-                return AdSize.SMART_BANNER;
+            case "adaptiveBanner":
+                return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, width);
             default:
                 return AdSize.BANNER;
         }

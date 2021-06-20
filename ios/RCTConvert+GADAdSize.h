@@ -3,6 +3,6 @@
 
 @interface RCTConvert (GADAdSize)
 
-+ (GADAdSize)GADAdSize:(id)json;
++ (GADAdSize)GADAdSize:(id)json withWidth:(CGFloat)width;
 
 @end

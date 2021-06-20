@@ -13,11 +13,10 @@ const eventMap = {
   adLoaded: 'rewardedVideoAdLoaded',
   adFailedToLoad: 'rewardedVideoAdFailedToLoad',
   adOpened: 'rewardedVideoAdOpened',
+  adFailedToOpen:'rewardedVideoAdFailedToOpen',
   adClosed: 'rewardedVideoAdClosed',
-  adLeftApplication: 'rewardedVideoAdLeftApplication',
   rewarded: 'rewardedVideoAdRewarded',
-  videoStarted: 'rewardedVideoAdVideoStarted',
-  videoCompleted: 'rewardedVideoAdVideoCompleted',
+  adImpression: 'rewardedVideoAdImpression',
 };
 
 const _subscriptions = new Map();
