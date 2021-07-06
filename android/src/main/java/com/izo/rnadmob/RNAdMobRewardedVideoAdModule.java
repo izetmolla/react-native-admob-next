@@ -94,11 +94,6 @@ public class RNAdMobRewardedVideoAdModule extends ReactContextBaseJavaModule {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                if (mRewardedAd != null) {
-                    promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.");
-                    return;
-                }
-
                 FullScreenContentCallback fullScreenContentCallback = new FullScreenContentCallback() {
                     @Override
                     public void onAdFailedToShowFullScreenContent(@NonNull @NotNull AdError adError) {
