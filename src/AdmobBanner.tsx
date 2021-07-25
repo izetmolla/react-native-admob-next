@@ -34,7 +34,7 @@ const AdmobBanner: FC<AdmobBannerTypes> = ({
 
     const loadBanner = () => {
         UIManager.dispatchViewManagerCommand(
-            findNodeHandle(_bannerView),
+            findNodeHandle(_bannerView.current),
             UIManager.getViewManagerConfig("RNGADBannerView").Commands
                 .loadBanner,
             undefined

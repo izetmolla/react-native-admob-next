@@ -8,7 +8,7 @@ const AdmobBanner = ({ style, onSizeChange, onAdFailedToLoad, ...res }) => {
         loadBanner();
     });
     const loadBanner = () => {
-        UIManager.dispatchViewManagerCommand(findNodeHandle(_bannerView), UIManager.getViewManagerConfig("RNGADBannerView").Commands
+        UIManager.dispatchViewManagerCommand(findNodeHandle(_bannerView.current), UIManager.getViewManagerConfig("RNGADBannerView").Commands
             .loadBanner, undefined);
     };
     const handleSizeChange = (event) => {
