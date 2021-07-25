@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "react-themeui": ["./src/index"]
+        },
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "esModuleInterop": true,
+        "importsNotUsedAsValues": "error",
+        "forceConsistentCasingInFileNames": true,
+        "jsx": "react",
+        "lib": ["esnext"],
+        "module": "esnext",
+        "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": false,
+        "noStrictGenericChecks": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "removeComments": true /* Do not emit comments to output. */,
+        "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
+        "outDir": "./dist" /* Redirect output structure to the directory. */,
+        "declaration": true /* Generates corresponding '.d.ts' file. */,
+        "target": "esnext"
+    }
+}

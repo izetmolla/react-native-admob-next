@@ -1,23 +1,30 @@
 {
-  "name": "react-native-admob-next",
-  "version": "1.2",
-  "description": "A react-native component for Google AdMob banners and interstitials",
-  "author": "Izet Molla <izetmolla@gmail.com>",
-  "main": "index.js",
-  "license": "BSD-2-Clause",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:izetmolla/react-native-admob-next.git"
-  },
-  "dependencies": {
-    "prop-types": "^15.5.10"
-  },
-  "peerDependencies": {
-    "react-native": ">=0.44.0"
-  },
-  "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^4.3.0",
-    "eslint-plugin-react": "^7.1.0"
-  }
+    "name": "react-native-admob-next",
+    "version": "1.2.0",
+    "description": "A react-native component for Google AdMob banners and interstitials",
+    "author": "Izet Molla <izetmolla@gmail.com>",
+    "main": "dist/index.js",
+    "types": "dist/index.d.js",
+    "license": "BSD-2-Clause",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:izetmolla/react-native-admob-next.git"
+    },
+    "scripts": {
+        "build": "rm -rf dist && tsc"
+    },
+    "dependencies": {
+        "prop-types": "^15.5.10"
+    },
+    "peerDependencies": {
+        "react-native": ">=0.44.0"
+    },
+    "devDependencies": {
+        "@types/react": "^17.0.15",
+        "@types/react-native": "^0.64.12",
+        "babel-eslint": "^7.2.3",
+        "eslint": "^4.3.0",
+        "eslint-plugin-react": "^7.1.0",
+        "typescript": "^4.3.5"
+    }
 }
