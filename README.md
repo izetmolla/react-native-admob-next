@@ -17,6 +17,9 @@ You can use npm or Yarn to install the latest beta version:
 
     yarn add react-native-admob-next
 
+**ios:**
+    pod install --repo-update
+
 In order to use this library, you have to link it to your project first. There's excellent documentation on how to do this in the [React Native Docs](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#content).
 
 Alternatively for iOS you can install the library with CocoaPods by adding a line to your `Podfile`;
