@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   # search paths, and we rely on consumers of this library to add
   # Google-Mobile-Ads-SDK as a direct dependency.
   # s.weak_frameworks        = 'GoogleMobileAds'
-  s.dependency 'Google-Mobile-Ads-SDK', "8.6.0"
+  s.dependency 'Google-Mobile-Ads-SDK', "8.12.0"
   # s.dependency 'GoogleMobileAds'
 
 
