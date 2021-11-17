@@ -1,74 +1,68 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   requireNativeComponent,
   UIManager,
   findNodeHandle,
   ViewPropTypes,
-} from 'react-native';
-import { string, func, arrayOf } from 'prop-types';
+} from "react-native";
+import { string, func, arrayOf } from "prop-types";
 
-import { createErrorFromErrorData } from './utils';
+import { createErrorFromErrorData } from "./utils";
+function PublisherBanner(props) {
+  const viewRef = useRef();
+  const [style, setStyle] = useState({});
 
-class PublisherBanner extends Component {
+  useEffect(() => {
+    loadBanner();
+  }, []);
 
-  constructor() {
-    super();
-    this.handleSizeChange = this.handleSizeChange.bind(this);
-    this.handleAppEvent = this.handleAppEvent.bind(this);
-    this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);
-    this.state = {
-      style: {},
-    };
-  }
-
-  componentDidMount() {
-    this.loadBanner();
-  }
-
-  loadBanner() {
+  const loadBanner = () => {
+    const node = findNodeHandle(viewRef.current);
+    // console.log('BANNER LOAD', node, props)
     UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this._bannerView),
-      UIManager.getViewManagerConfig('RNGAMBannerView').Commands.loadBanner,
-      null,
+      node,
+      UIManager.getViewManagerConfig("RNDFPBannerView").Commands.loadBanner,
+      []
     );
-  }
+  };
 
-  handleSizeChange(event) {
+  const handleSizeChange = (event) => {
     const { height, width } = event.nativeEvent;
-    this.setState({ style: { width, height } });
-    if (this.props.onSizeChange) {
-      this.props.onSizeChange({ width, height });
+    const newStyle = { width: Math.round(width), height: Math.round(height) };
+    if (JSON.stringify(style) !== JSON.stringify(newStyle)) {
+      const node = findNodeHandle(viewRef.current);
+      // console.log('BANNER STYLE', node,newStyle);
+      setStyle(newStyle);
+      props.onSizeChange?.(newStyle);
     }
-  }
+  };
 
-  handleAppEvent(event) {
-    if (this.props.onAppEvent) {
+  const handleAppEvent = (event) => {
+    if (props.onAppEvent) {
       const { name, info } = event.nativeEvent;
-      this.props.onAppEvent({ name, info });
+      props.onAppEvent({ name, info });
     }
-  }
+  };
 
-  handleAdFailedToLoad(event) {
-    if (this.props.onAdFailedToLoad) {
-      this.props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
+  const handleAdFailedToLoad = (event) => {
+    if (props.onAdFailedToLoad) {
+      props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
     }
-  }
+  };
 
-  render() {
-    return (
-      <RNGAMBannerView
-        {...this.props}
-        style={[this.props.style, this.state.style]}
-        onSizeChange={this.handleSizeChange}
-        onAdFailedToLoad={this.handleAdFailedToLoad}
-        onAppEvent={this.handleAppEvent}
-        ref={el => (this._bannerView = el)}
-      />
-    );
-  }
+  return (
+    <RNDFPBannerView
+      {...props}
+      style={[props.style, style]}
+      onSizeChange={handleSizeChange}
+      onAdFailedToLoad={handleAdFailedToLoad}
+      onAppEvent={handleAppEvent}
+      ref={(ref) => (viewRef.current = ref)}
+    />
+  );
 }
 
-PublisherBanner.simulatorId = 'SIMULATOR';
+PublisherBanner.simulatorId = "SIMULATOR";
 
 PublisherBanner.propTypes = {
   ...ViewPropTypes,
@@ -102,7 +96,6 @@ PublisherBanner.propTypes = {
    * Array of test devices. Use PublisherBanner.simulatorId for the simulator
    */
   testDevices: arrayOf(string),
-
   onSizeChange: func,
 
   /**
@@ -115,6 +108,9 @@ PublisherBanner.propTypes = {
   onAppEvent: func,
 };
 
-const RNGAMBannerView = requireNativeComponent('RNGAMBannerView', PublisherBanner);
+const RNGAMBannerView = requireNativeComponent(
+  "RNGAMBannerView",
+  PublisherBanner
+);
 
 export default PublisherBanner;

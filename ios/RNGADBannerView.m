@@ -61,6 +61,7 @@
     }
 
     GADRequest *request = [GADRequest request];
+    request.customTargeting = self.customTargeting;
     [_bannerView loadRequest:request];
 }
 

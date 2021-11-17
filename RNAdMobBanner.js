@@ -1,65 +1,54 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   requireNativeComponent,
   UIManager,
   findNodeHandle,
   ViewPropTypes,
-} from 'react-native';
-import { string, func, arrayOf } from 'prop-types';
+} from "react-native";
+import { string, func, arrayOf } from "prop-types";
 
-import { createErrorFromErrorData } from './utils';
+import { createErrorFromErrorData } from "./utils";
+function AdMobBanner(props) {
+  const [style, setStyle] = useState({});
 
-class AdMobBanner extends Component {
+  useEffect(() => {
+    loadBanner();
+  }, []);
 
-  constructor() {
-    super();
-    this.handleSizeChange = this.handleSizeChange.bind(this);
-    this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);
-    this.state = {
-      style: {},
-    };
-  }
-
-  componentDidMount() {
-    this.loadBanner();
-  }
-
-  loadBanner() {
+  const loadBanner = () => {
     UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this._bannerView),
-      UIManager.getViewManagerConfig('RNGADBannerView').Commands.loadBanner,
-      null,
+      findNodeHandle(_bannerView),
+      UIManager.getViewManagerConfig("RNGADBannerView").Commands.loadBanner,
+      []
     );
-  }
+  };
 
-  handleSizeChange(event) {
+  const handleSizeChange = (event) => {
     const { height, width } = event.nativeEvent;
-    this.setState({ style: { width, height } });
-    if (this.props.onSizeChange) {
-      this.props.onSizeChange({ width, height });
+    setStyle({ width, height });
+    if (props.onSizeChange) {
+      props.onSizeChange({ width, height });
     }
-  }
+  };
 
-  handleAdFailedToLoad(event) {
-    if (this.props.onAdFailedToLoad) {
-      this.props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
+  const handleAdFailedToLoad = (event) => {
+    if (props.onAdFailedToLoad) {
+      props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
     }
-  }
+  };
 
-  render() {
-    return (
-      <RNGADBannerView
-        {...this.props}
-        style={[this.props.style, this.state.style]}
-        onSizeChange={this.handleSizeChange}
-        onAdFailedToLoad={this.handleAdFailedToLoad}
-        ref={el => (this._bannerView = el)}
-      />
-    );
-  }
+  return (
+    <RNGADBannerView
+      {...props}
+      style={[props.style, style]}
+      onSizeChange={handleSizeChange}
+      onAdFailedToLoad={handleAdFailedToLoad}
+      ref={(el) => (_bannerView = el)}
+    />
+  );
 }
 
-AdMobBanner.simulatorId = 'SIMULATOR';
+AdMobBanner.simulatorId = "SIMULATOR";
 
 AdMobBanner.propTypes = {
   ...ViewPropTypes,
@@ -101,6 +90,6 @@ AdMobBanner.propTypes = {
   onAdClosed: func,
 };
 
-const RNGADBannerView = requireNativeComponent('RNGADBannerView', AdMobBanner);
+const RNGADBannerView = requireNativeComponent("RNGADBannerView", AdMobBanner);
 
 export default AdMobBanner;
