@@ -47,12 +47,13 @@
 #pragma clang diagnostic ignored "-Wobjc-missing-super-calls"
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
-    RCTLogError(@"RNGADBannerView cannot have subviews");
+    RCTLogError(@"RNGAMBannerView cannot have subviews");
 }
 #pragma clang diagnostic pop
 
 - (void)loadBanner {
     GADRequest *request = [GADRequest request];
+    request.testDevices = self._testDevices;
     request.customTargeting = self.customTargeting;
     [_bannerView loadRequest:request];
 }

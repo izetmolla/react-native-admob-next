@@ -21,7 +21,7 @@ function PublisherBanner(props) {
     // console.log('BANNER LOAD', node, props)
     UIManager.dispatchViewManagerCommand(
       node,
-      UIManager.getViewManagerConfig("RNDFPBannerView").Commands.loadBanner,
+      UIManager.getViewManagerConfig("RNGAMBannerView").Commands.loadBanner,
       []
     );
   };
@@ -51,7 +51,7 @@ function PublisherBanner(props) {
   };
 
   return (
-    <RNDFPBannerView
+    <RNGAMBannerView
       {...props}
       style={[props.style, style]}
       onSizeChange={handleSizeChange}
