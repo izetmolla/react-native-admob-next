@@ -182,10 +182,13 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
                 for(int i = 0; i < value.size(); i++){
                     values.add(value.getString(i));
                 }
-                adRequest = adRequestBuilder.addCustomTargeting(key, values);
+                adRequest = adRequestBuilder.addCustomTargeting(key, values).build();
             }
         }
-        adRequest = adRequestBuilder.build();
+        else {
+            adRequest = adRequestBuilder.build();
+        }
+        
         this.adView.loadAd(adRequest);
     }
 
