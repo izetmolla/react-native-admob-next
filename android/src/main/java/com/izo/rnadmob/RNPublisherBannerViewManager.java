@@ -155,6 +155,7 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
 
     public void loadBanner() {
         ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
+        AdManagerAdRequest adRequest;
         if (this.adSize != null) {
             adSizes.add(this.adSize);
         }
@@ -172,7 +173,6 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
         this.adView.setAdSizes(adSizesArray);
 
         AdManagerAdRequest.Builder adRequestBuilder = new AdManagerAdRequest.Builder();
-        AdManagerAdRequest adRequest = adRequestBuilder.build();
         if (this.customTargeting != null) {
             ReadableMapKeySetIterator iterator = this.customTargeting.keySetIterator();
             while (iterator.hasNextKey()) {
@@ -182,9 +182,10 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
                 for(int i = 0; i < value.size(); i++){
                     values.add(value.getString(i));
                 }
-                adRequest = adRequest.addCustomTargeting(key, values);
+                adRequest = adRequestBuilder.addCustomTargeting(key, values);
             }
         }
+        adRequest = adRequestBuilder.build();
         this.adView.loadAd(adRequest);
     }
 
