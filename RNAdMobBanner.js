@@ -10,8 +10,7 @@ import { string, func, arrayOf } from 'prop-types';
 import { createErrorFromErrorData } from './utils';
 
 class AdMobBanner extends Component {
-  
-constructor() {
+  constructor() {
     super();
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);

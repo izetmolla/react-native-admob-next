@@ -10,8 +10,7 @@ import { string, func, arrayOf } from 'prop-types';
 import { createErrorFromErrorData } from './utils';
 
 class PublisherBanner extends Component {
-  
-constructor() {
+  constructor() {
     super();
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleAppEvent = this.handleAppEvent.bind(this);
@@ -102,6 +101,7 @@ PublisherBanner.propTypes = {
    * Array of test devices. Use PublisherBanner.simulatorId for the simulator
    */
   testDevices: arrayOf(string),
+
   onSizeChange: func,
 
   /**
