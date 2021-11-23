@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Component } from "react";
 import {
   requireNativeComponent,
   UIManager,
@@ -8,44 +8,56 @@ import {
 import { string, func, arrayOf } from "prop-types";
 
 import { createErrorFromErrorData } from "./utils";
-function AdMobBanner(props) {
-  const [style, setStyle] = useState({});
 
-  useEffect(() => {
-    loadBanner();
-  }, []);
+class AdMobBanner extends Component {
+  constructor() {
+    super();
+    this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);
+    this.state = {
+      style: {},
+    };
+  }
 
-  const loadBanner = () => {
+  componentDidMount() {
+    this.loadBanner();
+  }
+
+  loadBanner() {
     UIManager.dispatchViewManagerCommand(
-      findNodeHandle(_bannerView),
+      findNodeHandle(this._bannerView),
       UIManager.getViewManagerConfig("RNGADBannerView").Commands.loadBanner,
-      []
+      null
     );
-  };
+  }
 
-  const handleSizeChange = (event) => {
+  handleSizeChange(event) {
     const { height, width } = event.nativeEvent;
-    setStyle({ width, height });
-    if (props.onSizeChange) {
-      props.onSizeChange({ width, height });
+    this.setState({ style: { width, height } });
+    if (this.props.onSizeChange) {
+      this.props.onSizeChange({ width, height });
     }
-  };
+  }
 
-  const handleAdFailedToLoad = (event) => {
-    if (props.onAdFailedToLoad) {
-      props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
+  handleAdFailedToLoad(event) {
+    if (this.props.onAdFailedToLoad) {
+      this.props.onAdFailedToLoad(
+        createErrorFromErrorData(event.nativeEvent.error)
+      );
     }
-  };
+  }
 
-  return (
-    <RNGADBannerView
-      {...props}
-      style={[props.style, style]}
-      onSizeChange={handleSizeChange}
-      onAdFailedToLoad={handleAdFailedToLoad}
-      ref={(el) => (_bannerView = el)}
-    />
-  );
+  render() {
+    return (
+      <RNGADBannerView
+        {...this.props}
+        style={[this.props.style, this.state.style]}
+        onSizeChange={this.handleSizeChange}
+        onAdFailedToLoad={this.handleAdFailedToLoad}
+        ref={(el) => (this._bannerView = el)}
+      />
+    );
+  }
 }
 
 AdMobBanner.simulatorId = "SIMULATOR";

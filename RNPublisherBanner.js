@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { Component } from "react";
 import {
   requireNativeComponent,
   UIManager,
@@ -8,58 +8,65 @@ import {
 import { string, func, arrayOf } from "prop-types";
 
 import { createErrorFromErrorData } from "./utils";
-function PublisherBanner(props) {
-  const viewRef = useRef();
-  const [style, setStyle] = useState({});
 
-  useEffect(() => {
-    loadBanner();
-  }, []);
+class PublisherBanner extends Component {
+  constructor() {
+    super();
+    this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.handleAppEvent = this.handleAppEvent.bind(this);
+    this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);
+    this.state = {
+      style: {},
+    };
+  }
 
-  const loadBanner = () => {
-    const node = findNodeHandle(viewRef.current);
-    // console.log('BANNER LOAD', node, props)
+  componentDidMount() {
+    this.loadBanner();
+  }
+
+  loadBanner() {
     UIManager.dispatchViewManagerCommand(
-      node,
+      findNodeHandle(this._bannerView),
       UIManager.getViewManagerConfig("RNGAMBannerView").Commands.loadBanner,
-      []
+      null
     );
-  };
+  }
 
-  const handleSizeChange = (event) => {
+  handleSizeChange(event) {
     const { height, width } = event.nativeEvent;
-    const newStyle = { width: Math.round(width), height: Math.round(height) };
-    if (JSON.stringify(style) !== JSON.stringify(newStyle)) {
-      const node = findNodeHandle(viewRef.current);
-      // console.log('BANNER STYLE', node,newStyle);
-      setStyle(newStyle);
-      props.onSizeChange?.(newStyle);
+    this.setState({ style: { width, height } });
+    if (this.props.onSizeChange) {
+      this.props.onSizeChange({ width, height });
     }
-  };
+  }
 
-  const handleAppEvent = (event) => {
-    if (props.onAppEvent) {
+  handleAppEvent(event) {
+    if (this.props.onAppEvent) {
       const { name, info } = event.nativeEvent;
-      props.onAppEvent({ name, info });
+      this.props.onAppEvent({ name, info });
     }
-  };
+  }
 
-  const handleAdFailedToLoad = (event) => {
-    if (props.onAdFailedToLoad) {
-      props.onAdFailedToLoad(createErrorFromErrorData(event.nativeEvent.error));
+  handleAdFailedToLoad(event) {
+    if (this.props.onAdFailedToLoad) {
+      this.props.onAdFailedToLoad(
+        createErrorFromErrorData(event.nativeEvent.error)
+      );
     }
-  };
+  }
 
-  return (
-    <RNGAMBannerView
-      {...props}
-      style={[props.style, style]}
-      onSizeChange={handleSizeChange}
-      onAdFailedToLoad={handleAdFailedToLoad}
-      onAppEvent={handleAppEvent}
-      ref={(ref) => (viewRef.current = ref)}
-    />
-  );
+  render() {
+    return (
+      <RNGAMBannerView
+        {...this.props}
+        style={[this.props.style, this.state.style]}
+        onSizeChange={this.handleSizeChange}
+        onAdFailedToLoad={this.handleAdFailedToLoad}
+        onAppEvent={this.handleAppEvent}
+        ref={(el) => (this._bannerView = el)}
+      />
+    );
+  }
 }
 
 PublisherBanner.simulatorId = "SIMULATOR";
