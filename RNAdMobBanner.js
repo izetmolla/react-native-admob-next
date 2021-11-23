@@ -10,7 +10,8 @@ import { string, func, arrayOf } from 'prop-types';
 import { createErrorFromErrorData } from './utils';
 
 class AdMobBanner extends Component {
-  constructor() {
+  
+constructor() {
     super();
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleAdFailedToLoad = this.handleAdFailedToLoad.bind(this);
@@ -58,7 +59,7 @@ class AdMobBanner extends Component {
   }
 }
 
-AdMobBanner.simulatorId = "SIMULATOR";
+AdMobBanner.simulatorId = 'SIMULATOR';
 
 AdMobBanner.propTypes = {
   ...ViewPropTypes,
@@ -100,6 +101,6 @@ AdMobBanner.propTypes = {
   onAdClosed: func,
 };
 
-const RNGADBannerView = requireNativeComponent("RNGADBannerView", AdMobBanner);
+const RNGADBannerView = requireNativeComponent('RNGADBannerView', AdMobBanner);
 
 export default AdMobBanner;

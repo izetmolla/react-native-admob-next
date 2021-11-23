@@ -10,7 +10,8 @@ import { string, func, arrayOf } from 'prop-types';
 import { createErrorFromErrorData } from './utils';
 
 class PublisherBanner extends Component {
-  constructor() {
+  
+constructor() {
     super();
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleAppEvent = this.handleAppEvent.bind(this);
@@ -67,7 +68,7 @@ class PublisherBanner extends Component {
   }
 }
 
-PublisherBanner.simulatorId = "SIMULATOR";
+PublisherBanner.simulatorId = 'SIMULATOR';
 
 PublisherBanner.propTypes = {
   ...ViewPropTypes,
@@ -113,6 +114,6 @@ PublisherBanner.propTypes = {
   onAppEvent: func,
 };
 
-const RNGAMBannerView = requireNativeComponent('RNGAMBannerView',PublisherBanner);
+const RNGAMBannerView = requireNativeComponent('RNGAMBannerView', PublisherBanner);
 
 export default PublisherBanner;
