@@ -1,6 +1,7 @@
 package com.izo.rnadmob;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -13,7 +14,9 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeArray;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -42,7 +45,8 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
     String[] testDevices;
     AdSize[] validAdSizes;
     String adUnitID;
-    AdSize adSize;
+    AdSize adSize;    
+    ReadableMap customTargeting;
 
     public ReactPublisherAdView(final Context context) {
         super(context);
@@ -169,6 +173,19 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
 
         AdManagerAdRequest.Builder adRequestBuilder = new AdManagerAdRequest.Builder();
         AdManagerAdRequest adRequest = adRequestBuilder.build();
+        if (this.customTargeting != null) {
+            ReadableMapKeySetIterator iterator = this.customTargeting.keySetIterator();
+            while (iterator.hasNextKey()) {
+                String key = iterator.nextKey();
+                ReadableArray value = this.customTargeting.getArray(key);
+                List<String> values = new ArrayList<String>();
+                for(int i = 0; i < value.size(); i++){
+                    values.add(value.getString(i));
+                }
+                adRequest = adRequestBuilder.addCustomTargeting(key, values).build();
+            }
+        }
+        
         this.adView.loadAd(adRequest);
     }
 
@@ -210,6 +227,10 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
         this.validAdSizes = adSizes;
     }
 
+    public void setCustomTargeting(ReadableMap _customTargeting) {
+        this.customTargeting = _customTargeting;
+    }
+
     @Override
     public void onAppEvent(String name, String info) {
         WritableMap event = Arguments.createMap();
@@ -221,12 +242,13 @@ class ReactPublisherAdView extends ReactViewGroup implements AppEventListener {
 
 public class RNPublisherBannerViewManager extends ViewGroupManager<ReactPublisherAdView> {
 
-    public static final String REACT_CLASS = "RNGADBannerView";
+    public static final String REACT_CLASS = "RNGAMBannerView";
 
     public static final String PROP_AD_SIZE = "adSize";
     public static final String PROP_VALID_AD_SIZES = "validAdSizes";
     public static final String PROP_AD_UNIT_ID = "adUnitID";
-    public static final String PROP_TEST_DEVICES = "testDevices";
+    public static final String PROP_TEST_DEVICES = "testDevices";    
+    public static final String PROP_CUSTOM_TARGETING = "customTargeting";
 
     public static final String EVENT_AD_LOADED = "onAdLoaded";
     public static final String EVENT_AD_FAILED_TO_LOAD = "onAdFailedToLoad";
@@ -320,6 +342,11 @@ public class RNPublisherBannerViewManager extends ViewGroupManager<ReactPublishe
         view.setAdUnitID(adUnitID);
     }
 
+    @ReactProp(name = PROP_CUSTOM_TARGETING)
+    public void setPropCustomTargeting(final ReactPublisherAdView view, final ReadableMap customTargeting) {
+        view.setCustomTargeting(customTargeting);
+    }
+
     @ReactProp(name = PROP_TEST_DEVICES)
     public void setPropTestDevices(final ReactPublisherAdView view, final ReadableArray testDevices) {
         ReadableNativeArray nativeArray = (ReadableNativeArray)testDevices;
@@ -335,7 +362,7 @@ public class RNPublisherBannerViewManager extends ViewGroupManager<ReactPublishe
                 return AdSize.MEDIUM_RECTANGLE;
             case "fullBanner":
                 return AdSize.FULL_BANNER;
-            case "leaderBoard":
+            case "leaderboard":
                 return AdSize.LEADERBOARD;
             case "adaptiveBanner":
                 return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, width);

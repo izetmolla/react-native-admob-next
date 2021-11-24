@@ -13,6 +13,7 @@
 @property (nonatomic, copy) NSArray *validAdSizes;
 @property (nonatomic, copy) NSArray *testDevices;
 @property (nonatomic, copy) NSString *adSize;
+@property (nonatomic, copy) NSDictionary *customTargeting;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onAdLoaded;
 @property (nonatomic, copy) RCTBubblingEventBlock onAdFailedToLoad;
