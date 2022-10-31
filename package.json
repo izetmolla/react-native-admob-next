@@ -13,7 +13,8 @@
         "build": "rm -rf dist && tsc"
     },
     "dependencies": {
-        "prop-types": "^15.5.10"
+        "prop-types": "^15.5.10",
+        "deprecated-react-native-prop-types": "4.8.4"
     },
     "peerDependencies": {
         "react-native": ">=0.44.0"
