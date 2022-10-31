@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "prop-types": "^15.5.10",
-        "deprecated-react-native-prop-types": "4.8.4"
+        "deprecated-react-native-prop-types": "2.3.0"
     },
     "peerDependencies": {
         "react-native": ">=0.44.0"
